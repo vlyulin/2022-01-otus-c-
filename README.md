@@ -185,9 +185,9 @@ internal class G
 1. Код в папке hw05 
 2. Резульат работы программы:
 
-![](hw04/imgs/program-output.png)
+![](hw05/imgs/program-output.png)
 
 3. Результат выполнения тестов
 
-![](hw04/imgs/test-cases.png)
+![](hw05/imgs/test-cases.png)
 
