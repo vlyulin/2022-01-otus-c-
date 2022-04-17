@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32112.339
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "hw05-delegates-and-events", "hw05-delegates-and-events.csproj", "{AD151535-54E5-4125-875B-61863C94E73A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "hw05-delegates-and-eventsTests", "..\hw05-delegates-and-eventsTests\hw05-delegates-and-eventsTests.csproj", "{B07BE8FF-C5A8-439A-A97E-EE76E74D9DC1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AD151535-54E5-4125-875B-61863C94E73A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD151535-54E5-4125-875B-61863C94E73A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD151535-54E5-4125-875B-61863C94E73A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD151535-54E5-4125-875B-61863C94E73A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B07BE8FF-C5A8-439A-A97E-EE76E74D9DC1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B07BE8FF-C5A8-439A-A97E-EE76E74D9DC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B07BE8FF-C5A8-439A-A97E-EE76E74D9DC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B07BE8FF-C5A8-439A-A97E-EE76E74D9DC1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5EB15E3E-3D7D-45E7-BA31-F107A8539B2B}
+	EndGlobalSection
+EndGlobal
