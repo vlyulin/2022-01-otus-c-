@@ -10,14 +10,18 @@ namespace hw05_delegates_and_events
         //    public static T GetMax(this IEnumerable e, Func<T, float> getParameter) where T : class;
         public static T? GetMax<T>(this IEnumerable e, Func<T, float> getParameter) where T : class
         {
-            if(e == null) return default(T);
-
-            T? max = default(T);
-            foreach (T item in e) {
-                if(max == null || getParameter(item) > getParameter(max)) max = item;
+            if (e == null)
+            {
+                return default(T);
             }
 
-            return max; 
+            T? max = default(T);
+            foreach (T item in e)
+            {
+                if (max == null || getParameter(item) > getParameter(max)) max = item;
+            }
+
+            return max;
         }
     }
 }

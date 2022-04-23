@@ -39,6 +39,6 @@ List<SomeClass> list = new List<SomeClass> {
                 new SomeClass(-24.1f)
             };
 Console.Write("\nПоиск максимального элемента из: ");
-foreach(SomeClass item in list) Console.Write(item.f + "; ");
+foreach (SomeClass item in list) Console.Write(item.f + "; ");
 var max = list.GetMax<SomeClass>(e => e.f);
 Console.WriteLine("\nMax value is: " + max.f);
