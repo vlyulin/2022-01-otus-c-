@@ -54,10 +54,7 @@ namespace hw05_delegates_and_events
         public void ProcessFile(string path)
         {
             counter++;
-            if (RaiseFileFoundEvent != null)
-            {
-                RaiseFileFoundEvent(this, new FileArgs(path));
-            }
+            RaiseFileFoundEvent?.Invoke(this, new FileArgs(path));
         }
 
         public void StopScanning()
