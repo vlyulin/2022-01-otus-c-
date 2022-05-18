@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "data-loader": {
+      "commandName": "Project",
+      "commandLineArgs": "--method=task --gen-path=C:\\_P\\OtusC#\\vlyulin_c#_homeworks\\hw06\\hw06-parallels\\data-generator\\bin\\x86\\Debug\\net6.0-windows\\data-generator.exe --quantity=99 --rep-path=rep.csv"
+    }
+  }
+}
