@@ -2,12 +2,12 @@
 using NDesk.Options;
 using repository;
 using repository.DAL;
+using repository.Factory;
 using System.Text;
 
 const string FUNCTION = "function";
 const string TASK = "task";
 const string NONE = "none";
-
 
 // Оработка входных параметров
 Dictionary<string, object>? parameters = null;
@@ -61,12 +61,13 @@ return 0;
 
 void ShowHelp()
 {
-    Console.WriteLine("Usage: data-loader.exe --rep-path=path [--gen-path=path --method=function|task --quantity=int] [--help]");
+    Console.WriteLine("Usage: data-loader.exe --inrep-path=path --outrep-path=path [--genapp-path=path --method=function|task --quantity=int] [--help]");
     Console.WriteLine("An interactive client for loading clients.");
     Console.WriteLine("Options:");
+    Console.WriteLine("  inrep-path - path to input csv repository file.");
+    Console.WriteLine("  outrep-path - path to output SQLite repository file.");
+    Console.WriteLine("  genapp-path - path to generator exe file.");
     Console.WriteLine("  method - method repository generation: by function or by task.");
-    Console.WriteLine("  gen-path - path to generator exe file.");
-    Console.WriteLine("  rep-path - path to repository file.");
     Console.WriteLine("  quantity - quantity of records to be generated.");
     Console.WriteLine("  help - this help.");
 }
@@ -76,14 +77,17 @@ Dictionary<string, object> ProcessInputParameters(string[] args)
     Dictionary<string, object> parameters = new Dictionary<string, object>();
     var options = new OptionSet()
             .Add("h|?|help|-help", "show help", delegate (string v) { parameters.Add("showHelp", true); })
+            .Add("inrep-path=", "path to input csv repository file.", delegate (string v) {
+                parameters.Add("inrep-path", v);
+            })
+            .Add("outrep-path=", "path to output SQLite repository file.", delegate (string v) {
+                parameters.Add("outrep-path", v);
+            })
+            .Add("genapp-path=", "path to generator exe file.", delegate (string v) {
+                parameters.Add("genapp-path", v);
+            })
             .Add("method=", "method for running data-generator", delegate (string v) {
                 parameters.Add("method", v.ToLower());
-            })
-            .Add("gen-path=", "path to generator exe file.", delegate (string v) {
-                parameters.Add("generatorPath", v);
-            })
-            .Add("rep-path=", "path to repository file.", delegate (string v) {
-                parameters.Add("repositoryPath", v);
             })
             .Add("quantity=", "quantity of records.", delegate (int q) {
                 parameters.Add("quantity", q);
@@ -97,19 +101,28 @@ Dictionary<string, object> ProcessInputParameters(string[] args)
 // Проверка входных параметров
 void CheckInputParameters(Dictionary<string, object> parameters)
 {
-    string repositoryPath = (string)parameters.GetValueOrDefault("repositoryPath","");
-    if(repositoryPath.Length == 0)
+    object inRepPath;
+    object outRepPath;
+    if(!parameters.TryGetValue("inrep-path", out inRepPath)) throw new Exception("The inrep-path param is not defined.");
+    if (!parameters.TryGetValue("outrep-path", out outRepPath)) throw new Exception();
+
+    if (((string)inRepPath).Length == 0)
     {
-        throw new Exception("Bad path to repository file defined in rep-path param.");
+        throw new Exception("Bad path to input csv repository file defined in the inrep-path param.");
     }
 
-    // проверка [--gen-path=path --method=function|task --quantity=int]
-    string[] keys = { "generatorPath", "method", "quantity" };
+    if (((string)outRepPath).Length == 0)
+    {
+        throw new Exception("Bad path to output SQLite repository file defined in the the outrep-path param.");
+    }
+
+    // проверка [--genapp-path=path --method=function|task --quantity=int]
+    string[] keys = { "genapp-path", "method", "quantity" };
     if(keys.Any(key => parameters.ContainsKey(key)))
     {
         if(!keys.All(key => parameters.ContainsKey(key)))
         {
-            throw new Exception("Not all params present: --gen-path=path --method=function|task --quantity=int");
+            throw new Exception("Not all params present: --genapp-path=path --method=function|task --quantity=int");
         }
 
         method = (string)parameters["method"];
@@ -124,22 +137,10 @@ void CheckInputParameters(Dictionary<string, object> parameters)
             throw new Exception("Quantity not specified or bad value: [" + quantity + "]");
         }
 
-        if (!CanCreateFile(repositoryPath))
+        if (!CanCreateFile((string)inRepPath))
         {
-            throw new Exception("Bad path to repository file: [" + repositoryPath + "]");
+            throw new Exception("Bad path to input csv repository file: [" + inRepPath + "]");
         }
-    }
-    else
-    {
-        if(!File.Exists(repositoryPath))
-        {
-            throw new Exception("Bad path to repository file: [" + repositoryPath + "]");
-        }
-    }
-
-    if (!parameters.ContainsKey("repositoryPath"))
-    {
-        throw new Exception("Bad path to repository file defined in rep-path param.");
     }
 }
 
@@ -161,9 +162,11 @@ bool CanCreateFile(string file)
 // Запуск генератора данных через вызов exe
 void GenerateDataByFunction(Dictionary<string, object> parameters)
 {
-    string generatorPath = (string)parameters["generatorPath"];
-    string repositoryPath = (string)parameters["repositoryPath"];
+    string generatorPath = (string)parameters["genapp-path"];
+    string repositoryPath = (string)parameters["inrep-path"];
     int quantity = (int)parameters["quantity"];
+
+    // TODO: проверка входных параметров
 
     StringBuilder stringBuilder = new StringBuilder();
     stringBuilder.Append("--path ");
@@ -177,28 +180,46 @@ void GenerateDataByFunction(Dictionary<string, object> parameters)
 
 void GenerateDataByTask(Dictionary<string, object> parameters)
 {
-    string generatorPath = (string)parameters["generatorPath"];
-    string repositoryPath = (string)parameters["repositoryPath"];
+    string generatorPath = (string)parameters["genapp-path"];
+    string repositoryPath = (string)parameters["inrep-path"];
     int quantity = (int)parameters["quantity"];
+
+    // TODO: проверка входных параметров
 
     // генерация клиентов
     ClientGenerator clientGenerator = new();
     List<Client> clients = clientGenerator.Next(quantity);
 
     // сохранение клиентов в репозитории
+    IConfiguration configuration = new CSVFileConfiguration(repositoryPath);
+    RepositoryCreator creator = new CSVFileRepositoryCreator();
+    IClientRepository? repository = creator.CreateClientRepository(configuration);
+    if(repository == null) { throw new Exception("CSVFileRepository is not created."); }
+    /*
     ISerializer<Client> serializer = new ClientCSVSerializer();
-    IClientContext context = new ClientFileContext(repositoryPath, serializer);
+    IClientContext context = new ClientCSVFileContext(repositoryPath, serializer);
     IClientRepository repository = new ClientRepository(context);
+    */
     repository.Insert(clients);
+
     Console.WriteLine("Done.\nCreated " + (int)parameters["quantity"] + " records.");
 }
 
 void LoadData(Dictionary<string, object> parameters)
 {
-    string repositoryPath = (string)parameters["repositoryPath"];
-    ISerializer<Client> serializer = new ClientCSVSerializer();
-    IClientContext context = new ClientFileContext(repositoryPath, serializer);
+    string inRepositoryPath = (string)parameters["inrep-path"];
+
+    // TODO: проверка входных параметров
+
+    IConfiguration configuration = new CSVFileConfiguration(inRepositoryPath);
+    RepositoryCreator creator = new CSVFileRepositoryCreator();
+    IClientRepository? inRepository = creator.CreateClientRepository(configuration);
+    if (inRepository == null) { throw new Exception("CSVFileRepository is not created."); }
+
+    /* ISerializer<Client> serializer = new ClientCSVSerializer();
+    IClientContext context = new ClientCSVFileContext(inRepositoryPath, serializer);
     IClientRepository inRepository = new ClientRepository(context);
+    */
 
     var threads = 2 * Environment.ProcessorCount;
     ThreadPool.SetMaxThreads(threads, threads);
@@ -223,17 +244,65 @@ void LoadData(Dictionary<string, object> parameters)
         /* Console.WriteLine("from = " + from + " to = " + to + " delta = " + 
             (recordNumber - to) + " next = " + (to + Math.Min(piece, recordNumber - to))); */
         Dictionary<string, object> backgroundParams = new Dictionary<string, object>();
-        backgroundParams.Add("in-rep", inRepository);
+        backgroundParams.Add("inrep-path", inRepositoryPath);
+        backgroundParams.Add("outrep-path", (string)parameters["outrep-path"]);
         backgroundParams.Add("from", from);
         backgroundParams.Add("to", to);
-        ThreadPool.QueueUserWorkItem(BackgroundDataLoader, backgroundParams);
+        // ThreadPool.QueueUserWorkItem(BackgroundDataLoader, backgroundParams);
+        BackgroundDataLoader(backgroundParams);
+    }
+}
+
+static void CheckBackgroundDataLoaderParams(Dictionary<string, object> p)
+{
+    long from = (long) p.GetValueOrDefault("from", -1);
+    long to = (long) p.GetValueOrDefault("to", -1);
+    string inRepositoryPath = (string)p.GetValueOrDefault("inrep-path","");
+    string outRepositoryPath = (string)p.GetValueOrDefault("outrep-path","");
+
+    if(from == -1 || to == -1)
+    {
+        throw new Exception("Load range (from and to) is not defined.");
+    }
+    if(inRepositoryPath == null)
+    {
+        throw new Exception("Input repository (in-rep) is not defined.");
+    }
+    if (outRepositoryPath == null)
+    {
+        throw new Exception("Out repository (out-rep) is not defined.");
     }
 }
 
 static void BackgroundDataLoader(Object backgroundParams)
 {
     Dictionary<string, object> p = (Dictionary<string, object>)backgroundParams;
+    CheckBackgroundDataLoaderParams(p);
+
     long from = (long)p.GetValueOrDefault("from", -1);
     long to = (long)p.GetValueOrDefault("to", -1);
     Console.WriteLine("from = " + from + " to = " + to);
+    string inRepositoryPath = (string)p.GetValueOrDefault("inrep-path","");
+    string outRepositoryPath = (string)p.GetValueOrDefault("outrep-path","");
+
+    IConfiguration inConfiguration = new CSVFileConfiguration(inRepositoryPath);
+    RepositoryCreator inRepCreator = new CSVFileRepositoryCreator();
+    IClientRepository? inRepository = inRepCreator.CreateClientRepository(inConfiguration);
+
+    if(inRepository == null) { throw new Exception("Input CSV repository is not created.");  }
+
+    IConfiguration outConfiguration = new SQLiteConfiguration(outRepositoryPath);
+    RepositoryCreator outRepCreator = new SQLiteRepositoryCreator();
+    IClientRepository? outRepository = outRepCreator.CreateClientRepository(outConfiguration);
+
+    if (outRepository == null) { throw new Exception("Output SQL repository is not created."); }
+
+    // TODO: перенести IClientCpecification в репозитории
+    IClientSpecification clientCpecification = new ClientFileSpecification(from, to);
+    IEnumerable<Client> clients = inRepository.Get(clientCpecification);
+
+    if(clients.Count() > 0)
+    {
+        outRepository.Insert(clients);
+    }
 }

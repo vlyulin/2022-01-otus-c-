@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace repository.DAL
 {
-    public class ClientFileContext : IClientContext
+    public class ClientCSVFileContext : IClientContext
     {
         private ISerializer<Client> _serializer;
         private string _fileName;
 
-        public ClientFileContext(string fileName, ISerializer<Client> serializer)
+        public ClientCSVFileContext(string fileName, ISerializer<Client> serializer)
         {
             if(!File.Exists(fileName))
             {

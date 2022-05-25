@@ -8,9 +8,9 @@ namespace repository.DAL
 {
     public class ClientFileSpecification : IClientSpecification
     {
-        private int _from;
-        private int _to;
-        public ClientFileSpecification(int from, int to)
+        private long _from;
+        private long _to;
+        public ClientFileSpecification(long from, long to)
         {
             this._from = from;
             this._to = to;

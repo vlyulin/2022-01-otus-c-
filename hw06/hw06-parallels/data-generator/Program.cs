@@ -2,6 +2,7 @@
 using repository;
 using repository.DAL;
 using NDesk.Options;
+using repository.Factory;
 
 Dictionary<string, object> parameters = new Dictionary<string, object>();
 var options = new OptionSet()
@@ -140,8 +141,15 @@ static void GenerateData(Dictionary<string, object> parameters)
     List<Client> clients = clientGenerator.Next(quantity);
 
     // сохранение клиентов в репозитории
-    ISerializer<Client> serializer = new ClientCSVSerializer();
-    IClientContext context = new ClientFileContext(repositoryPath, serializer);
-    IClientRepository repository = new ClientRepository(context);
+    IConfiguration configuration = new CSVFileConfiguration(repositoryPath);
+    RepositoryCreator creator = new CSVFileRepositoryCreator();
+    IClientRepository? repository = creator.CreateClientRepository(configuration);
+    if(repository == null)
+    {
+        throw new Exception("Repository is not created.");
+    }
+    // ISerializer<Client> serializer = new ClientCSVSerializer();
+    // IClientContext context = new ClientCSVFileContext(repositoryPath, serializer);
+    // IClientRepository repository = new ClientRepository(context);
     repository.Insert(clients);
 }
