@@ -241,16 +241,20 @@ void LoadData(Dictionary<string, object> parameters)
         from += piece, to += Math.Min(piece,recordNumber - to)
     )
     {
-        /* Console.WriteLine("from = " + from + " to = " + to + " delta = " + 
-            (recordNumber - to) + " next = " + (to + Math.Min(piece, recordNumber - to))); */
+        Console.WriteLine("from = " + from + " to = " + to + " delta = " + 
+            (recordNumber - to) + " next = " + (to + Math.Min(piece, recordNumber - to)));
         Dictionary<string, object> backgroundParams = new Dictionary<string, object>();
         backgroundParams.Add("inrep-path", inRepositoryPath);
         backgroundParams.Add("outrep-path", (string)parameters["outrep-path"]);
         backgroundParams.Add("from", from);
         backgroundParams.Add("to", to);
-        // ThreadPool.QueueUserWorkItem(BackgroundDataLoader, backgroundParams);
-        BackgroundDataLoader(backgroundParams);
+        ThreadPool.QueueUserWorkItem(callback => BackgroundDataLoader(backgroundParams));
+        // BackgroundDataLoader(backgroundParams);
+        // var t = new Thread(BackgroundDataLoader);
+        // t.Start(backgroundParams);
     }
+
+    System.Threading.Thread.Sleep(5000);
 }
 
 static void CheckBackgroundDataLoaderParams(Dictionary<string, object> p)
