@@ -9,7 +9,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "repository", "repository\re
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "data-loader", "data-loader\data-loader.csproj", "{157D5EFB-C3F4-4DB9-8DB6-F4D2BFFA22CC}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SharedProject", "SharedProject\SharedProject.shproj", "{1AA15448-6AEC-4F6C-BFEB-DAA28EA21DDC}"
+EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		SharedProject\SharedProject.projitems*{157d5efb-c3f4-4db9-8db6-f4d2bffa22cc}*SharedItemsImports = 5
+		SharedProject\SharedProject.projitems*{1aa15448-6aec-4f6c-bfeb-daa28ea21ddc}*SharedItemsImports = 13
+		SharedProject\SharedProject.projitems*{2c201d92-dd77-4302-80b5-86a6280024f4}*SharedItemsImports = 5
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|x86 = Debug|x86

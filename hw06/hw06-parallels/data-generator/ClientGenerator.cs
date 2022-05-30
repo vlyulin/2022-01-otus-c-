@@ -7,9 +7,18 @@ using repository.DAL;
 
 namespace data_generator
 {
+    /// <summary>
+    /// Реализация интерфейса IDataGenerator.
+    /// Генерация объектов Client
+    /// </summary>
     public class ClientGenerator : IDataGenerator<Client>
     {
         private int _nextId = 0;
+
+        /// <summary>
+        /// Создание одного объекта типа Client
+        /// </summary>
+        /// <returns></returns>
         public Client Next()
         {
             Client client = new();
@@ -20,6 +29,11 @@ namespace data_generator
             return client;
         }
 
+        /// <summary>
+        /// Создание нескольких объектов типа Client
+        /// </summary>
+        /// <param name="count">количество создаваемых объектов</param>
+        /// <returns>список сгенерированных объектов типа Client</returns>
         public List<Client> Next(int count)
         {
             List<Client> list = new List<Client>();
@@ -30,6 +44,10 @@ namespace data_generator
             return list;
         }
 
+        /// <summary>
+        /// Генерация произвольного ФИО
+        /// </summary>
+        /// <returns>сгенерированное ФИО</returns>
         private string GetNewFIO() 
         {
             const int MINLEN = 5;
@@ -43,9 +61,16 @@ namespace data_generator
             stringBuider.Append(' ');
             stringBuider.Append(GenerateName(r.Next(MINLEN, MAXLEN)));
             return stringBuider.ToString();
-        } 
+        }
 
-        // https://stackoverflow.com/questions/14687658/random-name-generator-in-c-sharp
+        /// <summary>
+        /// Генерация строки похожей на фамилию, имя или отчество
+        /// </summary>
+        /// <param name="len">длина генерируемой строки</param>
+        /// <returns>сгенерированная строка длины len</returns>
+        /// <remarks>
+        /// https://stackoverflow.com/questions/14687658/random-name-generator-in-c-sharp
+        /// </remarks>
         private static string GenerateName(int len)
         {
             Random r = new Random();
@@ -66,6 +91,11 @@ namespace data_generator
             return Name;
         }
 
+        /// <summary>
+        /// Генерация e-mail на основе имени и фамилии
+        /// </summary>
+        /// <param name="fio">ФИО разделенные пробелом</param>
+        /// <returns>сгенерированный e-mail</returns>
         private static string GetNewEmail(string fio)
         {
             string[] emailproviders = { "yandex.ru", "mail.ru", "gmail.com" };
@@ -80,6 +110,10 @@ namespace data_generator
             return stringBuilder.ToString();
         }
 
+        /// <summary>
+        /// Генерация номера телефона
+        /// </summary>
+        /// <returns>сгенерированный номер телефона</returns>
         private static string GetNewPhoneNumber()
         {
             Random rand = new Random();

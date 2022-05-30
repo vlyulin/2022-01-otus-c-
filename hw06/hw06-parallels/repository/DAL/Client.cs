@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace repository.DAL
 {
+    /// <summary>
+    /// Сущность Клиент 
+    /// </summary>
     public class Client
     {
         //id(целое число)

@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace repository.Factory
 {
+    /// <summary>
+    /// Интерфейс конфигурация репозитория
+    /// </summary>
     public interface IConfiguration
     {
     }

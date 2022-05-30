@@ -1,1 +1,0 @@
-https://www.codeproject.com/Articles/16277/Pluggable-Sample-Data-Generator-Framework-and-GUI

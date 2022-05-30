@@ -3,6 +3,7 @@ using repository;
 using repository.DAL;
 using NDesk.Options;
 using repository.Factory;
+using SharedProject;
 
 Dictionary<string, object> parameters = new Dictionary<string, object>();
 var options = new OptionSet()
@@ -64,14 +65,9 @@ Console.WriteLine("Done.\nCreated " + (int)parameters["quantity"] + " records.")
 
 return 0;
 
-/* ClientFileSpecification fileSpecification = new ClientFileSpecification(4, 7);
-IEnumerable<Client> e = repository.Get(fileSpecification);
-foreach (Client client in e)
-{
-    Console.WriteLine(client);
-}
-*/
-
+/// <summary>
+/// Вывод Help
+/// </summary>
 void ShowHelp()
 {
     Console.WriteLine("Usage: data-generator.exe --path=path --quantity=int [--help]");
@@ -82,22 +78,11 @@ void ShowHelp()
     Console.WriteLine("  help - this help.");
 }
 
-/* Проверка возможности создания файла */
-bool CanCreateFile(string file)
-{
-    try
-    {
-        using (File.Create(file)) { }
-        File.Delete(file);
-        return true;
-    }
-    catch
-    {
-        return false;
-    }
-}
-
-// Проверка входных параметров
+/// <summary>
+/// Проверка входных параметров 
+/// </summary>
+/// <param name="parameters">проверяемые входные параметры</param>
+/// <returns>true - если параметры заданы правильно</returns>
 bool CheckInputParameters(Dictionary<string, object> parameters)
 {
     if (!parameters.ContainsKey("repositoryPath"))
@@ -116,7 +101,7 @@ bool CheckInputParameters(Dictionary<string, object> parameters)
         return false;
     }
 
-    if (!CanCreateFile(repositoryPath))
+    if (!Utils.CanCreateFile(repositoryPath))
     {
         Console.WriteLine("Bad path to repository file: [" + repositoryPath + "]");
         return false;
@@ -131,6 +116,10 @@ bool CheckInputParameters(Dictionary<string, object> parameters)
     return true;
 }
 
+/// <summary>
+/// Генерация клиентов в соответствии с заданными параметрами и сохранение их в CSV репозиторий
+/// </summary>
+/// <param name="parameters">входные параметры для генерации клиентов</param>
 static void GenerateData(Dictionary<string, object> parameters)
 {
     int quantity = (int)parameters["quantity"];
@@ -148,8 +137,6 @@ static void GenerateData(Dictionary<string, object> parameters)
     {
         throw new Exception("Repository is not created.");
     }
-    // ISerializer<Client> serializer = new ClientCSVSerializer();
-    // IClientContext context = new ClientCSVFileContext(repositoryPath, serializer);
-    // IClientRepository repository = new ClientRepository(context);
+
     repository.Insert(clients);
 }

@@ -6,10 +6,18 @@ using System.Threading.Tasks;
 
 namespace repository.DAL
 {
+    /// <summary>
+    /// Сериализация/десериализация сущности "Клиент" в/из CSV формата
+    /// </summary>
     public class ClientCSVSerializer : ISerializer<Client>
     {
         const char FIELD_SEPARATOR = ',';
 
+        /// <summary>
+        /// Сериализация Client в CSV формат
+        /// </summary>
+        /// <param name="obj">экземпляр типа Client</param>
+        /// <returns></returns>
         public string Serialize(Client obj)
         {
             StringBuilder stringBuilder = new StringBuilder();
@@ -22,6 +30,13 @@ namespace repository.DAL
             stringBuilder.Append(obj.phone);
             return stringBuilder.ToString();
         }
+        
+        /// <summary>
+        /// Десериализация клиента из CSV формата в экземпляр Client
+        /// </summary>
+        /// <param name="stream">поток bytes</param>
+        /// <returns>экземпляр типа Client</returns>
+        /// <exception cref="IOException"></exception>
         public Client Deserialize(StreamReader stream)
         {
             string str = stream.ReadLine();
