@@ -933,3 +933,8 @@ Total is: 10000000. Elapsed time for calculation of 10000000 numbers is :00:00:0
 ```
 
 ![](hw07/imgs/hw07-result.png)
+
+### Окружение 
+![](hw07/imgs/hardware01.png)
+
+![](hw07/imgs/hardware02.png)
