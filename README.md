@@ -7,6 +7,7 @@ Content:
 * [Module hw04 ДЗ "Рефлексия и её применение"](#Module-hw04-reflection)
 * [Module hw05 ДЗ "Делегаты и события"](#Module-hw05-delegates)
 * [Module hw06 ДЗ "Параллельная загрузка данных из файла"](#Module-hw06-parallels)
+* [Module hw07 ДЗ "Многопоточный проект"](#Module-hw07-inprocess-communication)
 
 # Student
 `
@@ -884,3 +885,51 @@ Options:
 
 ---
 
+
+
+# Module hw07 ДЗ "Многопоточный проект" <a name="Module-hw07-inprocess-communication"></a>
+> Задание: Многопоточный проект
+> Цель: Применение разных способов распараллеливания задач и оценка оптимального способа реализации.
+> Описание/Пошаговая инструкция выполнения домашнего задания:
+> 1. Напишите вычисление суммы элементов массива интов:
+> - Обычное
+> - Параллельное (для реализации использовать Thread, например List)
+> - Параллельное с помощью LINQ
+> 2. Замерьте время выполнения для 100 000, 1 000 000 и 10 000 000
+> 3. Укажите в таблице результаты замеров, указав:
+> - Окружение (характеристики компьютера и ОС)
+> - Время выполнения последовательного вычисления
+> - Время выполнения параллельного вычисления
+> - Время выполнения LINQ Пришлите в чат с преподавателем помимо ссылки на репозиторий номера своих строк в таблице.
+
+Результаты выполнения:
+---
+Обычное вычисление суммы элементов массива через Loop:
+```
+Total is: 100000. Elapsed time for calculation of 100000 numbers is :00:00:00.0004217 ms.
+Total is: 1000000. Elapsed time for calculation of 1000000 numbers is :00:00:00.0042811 ms.
+Total is: 10000000. Elapsed time for calculation of 10000000 numbers is :00:00:00.0315901 ms.
+```
+---
+Параллельное вычисление суммы элементов массива через Thread:
+```
+Total is: 100000. Elapsed time for calculation of 100000 numbers is :00:00:00.0083435 ms.
+Total is: 1000000. Elapsed time for calculation of 1000000 numbers is :00:00:00.0063219 ms.
+Total is: 10000000. Elapsed time for calculation of 10000000 numbers is :00:00:00.0192141 ms.
+```
+---
+Параллельное вычисление суммы элементов массива через PLinq:
+```
+Total is: 100000. Elapsed time for calculation of 100000 numbers is :00:00:00.1062788 ms.
+Total is: 1000000. Elapsed time for calculation of 1000000 numbers is :00:00:00.0024686 ms.
+Total is: 10000000. Elapsed time for calculation of 10000000 numbers is :00:00:00.0186400 ms.
+```
+---
+Параллельное вычисление суммы элементов массива через Partitioning:
+```
+Total is: 100000. Elapsed time for calculation of 100000 numbers is :00:00:00.0315617 ms.
+Total is: 1000000. Elapsed time for calculation of 1000000 numbers is :00:00:00.0043597 ms.
+Total is: 10000000. Elapsed time for calculation of 10000000 numbers is :00:00:00.0326318 ms.
+```
+
+![](hw07/imgs/hw07-result.png)
