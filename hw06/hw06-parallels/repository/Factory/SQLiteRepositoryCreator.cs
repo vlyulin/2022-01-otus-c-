@@ -23,7 +23,7 @@ namespace repository.Factory
         /// <returns></returns>
         public override IClientRepository? CreateClientRepository(IConfiguration configuration)
         {
-            if (configuration == null) return null;
+            // if (configuration == null) return null;
             if (configuration is SQLiteConfiguration)
             {
                 SQLiteConfiguration config = (SQLiteConfiguration) configuration;

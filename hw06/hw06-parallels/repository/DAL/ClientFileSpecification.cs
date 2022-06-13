@@ -24,8 +24,8 @@ namespace repository.DAL
         /// <param name="to">конечный идентификатор диапазона отбора клиентов (включительно)</param>
         public ClientFileSpecification(long from, long to)
         {
-            this._from = from;
-            this._to = to;
+            _from = from;
+            _to = to;
         }
 
         /// <summary>

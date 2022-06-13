@@ -65,9 +65,7 @@ Console.WriteLine("Done.\nCreated " + (int)parameters["quantity"] + " records.")
 
 return 0;
 
-/// <summary>
-/// Вывод Help
-/// </summary>
+// Вывод Help
 void ShowHelp()
 {
     Console.WriteLine("Usage: data-generator.exe --path=path --quantity=int [--help]");
@@ -78,11 +76,14 @@ void ShowHelp()
     Console.WriteLine("  help - this help.");
 }
 
-/// <summary>
-/// Проверка входных параметров 
-/// </summary>
-/// <param name="parameters">проверяемые входные параметры</param>
-/// <returns>true - если параметры заданы правильно</returns>
+// Проверка входных параметров 
+// Входные параметры:
+//   parameters - проверяемые входные параметры
+//     1) repositoryPath - путь к файлу пепозиторию
+//     2) quantity - количество генерируемых записей
+// Возвращаемое значение:
+//   true - если параметры заданы правильно
+//   false - если параметры заданы некорректно
 bool CheckInputParameters(Dictionary<string, object> parameters)
 {
     if (!parameters.ContainsKey("repositoryPath"))
@@ -116,10 +117,13 @@ bool CheckInputParameters(Dictionary<string, object> parameters)
     return true;
 }
 
-/// <summary>
-/// Генерация клиентов в соответствии с заданными параметрами и сохранение их в CSV репозиторий
-/// </summary>
-/// <param name="parameters">входные параметры для генерации клиентов</param>
+// Генерация клиентов в соответствии с заданными параметрами и сохранение их в CSV репозиторий
+// Входные параметры:
+//   parameters - входные параметры для генерации клиентов:
+//     1) repositoryPath - путь к файлу пепозиторию
+//     2) quantity - количество генерируемых записей
+// Exceptions:
+//     Exception - ошибка
 static void GenerateData(Dictionary<string, object> parameters)
 {
     int quantity = (int)parameters["quantity"];

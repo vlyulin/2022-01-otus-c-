@@ -7,10 +7,10 @@ using SharedProject;
 using System.Diagnostics;
 using System.Text;
 
-const string FUNCTION = "function";
-const string TASK = "task";
-const string NONE = "none";
-const int DEFAULT_NTRIES = 3;
+const string Function = "function";
+const string Task = "task";
+const string None = "none";
+const int DefaultNTries = 3;
 
 // Оработка входных параметров
 Dictionary<string, object>? parameters = null;
@@ -42,21 +42,21 @@ if ((bool)parameters.GetValueOrDefault("showHelp", false))
 // выбор между процессом или вызовом метода сделать настройкой
 // (например аргумент командной строки или файл с настройками) со значением по умолчанию для метода.
 
-string method = (string)parameters.GetValueOrDefault("method", NONE);
+string method = (string)parameters.GetValueOrDefault("method", None);
 // при сдаче задания написать время, за которое был обработан файл и количество потоков.
 Stopwatch stopwatch = new Stopwatch();
 stopwatch.Start();
-if (method == FUNCTION)
+if (method == Function)
 {
     GenerateDataByFunction(parameters);
 }
-else if(method == TASK)
+else if(method == Task)
 {
     GenerateDataByTask(parameters);
 }
 stopwatch.Stop();
-double sec = (double)stopwatch.ElapsedTicks / Stopwatch.Frequency; //переводим такты в секунды
-Console.WriteLine("Data generation execution time: " + sec);
+// double sec = (double)stopwatch.ElapsedTicks / Stopwatch.Frequency; //переводим такты в секунды
+Console.WriteLine("Data generation execution time: " + stopwatch.ElapsedMilliseconds + " ms.");
 
 // Распараллеливаем обработку файла по набору диапазонов Id, то есть нужно, чтобы файл разбивался
 // на диапазоны по Id и обрабатывался параллельно через Thread, сколько диапазонов столько потоков.
@@ -68,13 +68,11 @@ stopwatch.Start();
 LoadData(parameters);
 stopwatch.Stop();
 
-sec = (double)stopwatch.ElapsedTicks / Stopwatch.Frequency; //переводим такты в секунды
-Console.WriteLine("Execution time: " + sec);
+// sec = (double)stopwatch.ElapsedTicks / Stopwatch.Frequency; //переводим такты в секунды
+Console.WriteLine("Execution time: " + stopwatch.ElapsedMilliseconds + " ms.");
 return 0;
 
-/// <summary>
-/// Вывод Help
-/// </summary>
+// Вывод Help
 void ShowHelp()
 {
     Console.WriteLine("Usage: data-loader.exe --inrep-path=path --outrep-path=path [--genapp-path=path --method=function|task --quantity=int] [--help] [--ntries=int]");
@@ -118,11 +116,19 @@ Dictionary<string, object> ProcessInputParameters(string[] args)
     return parameters;
 }
 
-/// <summary>
-/// Проверка входных параметров 
-/// </summary>
-/// <param name="parameters">проверяемые входные параметры</param>
-/// <exception cref="Exception">ошибка в случае неверно заданных параметров</exception>
+// Проверка входных параметров 
+// Входные параметры:
+//      parameters      - проверяемые входные параметры. Включает:
+//      1) inrep-path   - путь к файлу репозитория - источнику данных
+//      2) outrep-path  - путь к файлу репозитория в который загружаются данные
+//      3) genapp-path  - путь к исполнительному файлу генератору данных
+//      4) method       - метод генерации данных. Возможные значения: function или task.
+//          a) function - генерация данных вызовом функции GenerateDataByFunction
+//          b) task     - генерация данных вызовом task (метод GenerateDataByTask)
+//      5) quantity     - количество генерируемых записей для сохранения в репозитории - источнике данных.
+//      Примечание: параметры genapp-path, method и quantity должны звдвывться вместе
+// Exceptions:
+//      Exception       - возникает в случае неверно заданных параметров
 void CheckInputParameters(Dictionary<string, object> parameters)
 {
     object inRepPath;
@@ -150,7 +156,7 @@ void CheckInputParameters(Dictionary<string, object> parameters)
         }
 
         method = (string)parameters["method"];
-        if (method != FUNCTION && method != TASK)
+        if (method != Function && method != Task)
         {
             throw new Exception("Bad method: " + method);
         }
@@ -168,10 +174,8 @@ void CheckInputParameters(Dictionary<string, object> parameters)
     }
 }
 
-/// <summary>
-/// Запуск генератора данных через вызов программы data-generator.exe 
-/// с сохранением сгенерированных данных в CSV репозитории
-/// </summary>
+// Запуск генератора данных через вызов программы data-generator.exe 
+// с сохранением сгенерированных данных в CSV репозитории
 void GenerateDataByFunction(Dictionary<string, object> parameters)
 {
     string generatorPath = (string)parameters["genapp-path"];
@@ -188,10 +192,8 @@ void GenerateDataByFunction(Dictionary<string, object> parameters)
     proc.WaitForExit();
 }
 
-/// <summary>
-/// Запуск генератора данных через Task
-/// с сохранением сгенерированных данных в CSV репозитории
-/// </summary>
+// Запуск генератора данных через Task
+// с сохранением сгенерированных данных в CSV репозитории
 void GenerateDataByTask(Dictionary<string, object> parameters)
 {
     string generatorPath = (string)parameters["genapp-path"];
@@ -212,9 +214,7 @@ void GenerateDataByTask(Dictionary<string, object> parameters)
     Console.WriteLine("Done.\nCreated " + (int)parameters["quantity"] + " records.");
 }
 
-/// <summary>
-/// Загрузка данных в SQLite репозиторий в параллельном режиме
-/// </summary>
+// Загрузка данных в SQLite репозиторий в параллельном режиме
 void LoadData(Dictionary<string, object> parameters)
 {
     string inRepositoryPath = (string)parameters["inrep-path"];
@@ -222,9 +222,11 @@ void LoadData(Dictionary<string, object> parameters)
     IConfiguration configuration = new CSVFileConfiguration(inRepositoryPath);
     RepositoryCreator creator = new CSVFileRepositoryCreator();
     IClientRepository? inRepository = creator.CreateClientRepository(configuration);
-    if (inRepository == null) { throw new Exception("CSVFileRepository is not created."); }
+    if (inRepository == null) { 
+        throw new Exception("CSVFileRepository is not created."); 
+    }
 
-    var threads = 2 * Environment.ProcessorCount;
+    var threads = Environment.ProcessorCount; // было 2 * Environment.ProcessorCount
     ThreadPool.SetMaxThreads(threads, threads);
 
     Console.WriteLine("Yardware info:");
@@ -248,7 +250,7 @@ void LoadData(Dictionary<string, object> parameters)
     Console.WriteLine("Records for loading: " + recordNumber);
     Console.WriteLine("Number of threads: " + threads + ". Records for each thread: " + piece);
 
-    int niterations = (int)parameters.GetValueOrDefault("ntries", DEFAULT_NTRIES);
+    int niterations = (int)parameters.GetValueOrDefault("ntries", DefaultNTries);
     for (int i = 1; i <= niterations; i++)
     {
         // флаг ошибочного завершения загрузки данных в SQLite
@@ -300,11 +302,17 @@ void LoadData(Dictionary<string, object> parameters)
     }
 }
 
-/// <summary>
-/// Проверка входных параметров для загрузчика данных
-/// </summary>
-/// <param name="p">проверяемые входные параметры</param>
-/// <exception cref="Exception">ошибка в случае неверно заданных параметров</exception>
+// Проверка входных параметров для загрузчика данных
+// Входные параметры:
+//      p - проверяемые входные параметры.
+//      1) inrep-path   - путь к файлу репозитория - источнику данных.
+//      2) outrep-path  - путь к файлу репозитория в который загружаются данные.
+//      3) from         - начало диапазона обрабатываемых записей.
+//      4) to           - окончание диапазона обрабатываемых записей (включительно).
+//      5) ResetEvent   - параметр типа ManualResetEvent для синхронизации потоков.
+//      6) errorHappened - флаг ошибочного завершения загрузки данных в SQLite. Soft остановка обработки потоков.
+// Exceptions:
+//      Exception   - ошибка в случае неверно заданных параметров.
 static void CheckBackgroundDataLoaderParams(Dictionary<string, object> p)
 {
     long from = (long) p.GetValueOrDefault("from", -1);
@@ -339,17 +347,14 @@ static void CheckBackgroundDataLoaderParams(Dictionary<string, object> p)
     }
 }
 
-/// <summary>
-/// Загрузчик данных из CSV репозитория в SQLite репозиторий
-/// </summary>
-/// <param name="backgroundParams">входные параметры определяющие загружаемые данные</param>
-/// <remarks>
-/// <param name="resetEvent">параметр типа ManualResetEvent для синхронизации потоков</param>
-/// <param name="from">начальный идентификатор диапазона клиентов для загрузки</param>
-/// <param name="to">конечный идентификатор диапазона клиентов для загрузки</param>
-/// <param name="inrep-path">путь к CSV репозиторию</param>
-/// <param name="outrep-path">путь к SQLite репозиторию</param>
-/// </remarks>
+// Загрузчик данных из CSV репозитория в SQLite репозиторий
+// Входные параметры:
+//   backgroundParams - входные параметры определяющие загружаемые данные
+//      1) resetEvent - параметр типа ManualResetEvent для синхронизации потоков
+//      2) from - начальный идентификатор диапазона клиентов для загрузки
+//      3) to - конечный идентификатор диапазона клиентов для загрузки
+//      4) inrep-path - путь к CSV репозиторию
+//      5) outrep-path - путь к SQLite репозиторию
 static void BackgroundDataLoader(Object backgroundParams)
 {
     Dictionary<string, object> p = (Dictionary<string, object>)backgroundParams;
@@ -380,13 +385,17 @@ static void BackgroundDataLoader(Object backgroundParams)
         IConfiguration inConfiguration = new CSVFileConfiguration(inRepositoryPath);
         RepositoryCreator inRepCreator = new CSVFileRepositoryCreator();
         IClientRepository? inRepository = inRepCreator.CreateClientRepository(inConfiguration);
-        if (inRepository == null) { throw new Exception("Input CSV repository is not created."); }
+        if (inRepository == null) { 
+            throw new Exception("Input CSV repository is not created."); 
+        }
 
         // Создание экземпляра SQLite репозитория
         IConfiguration outConfiguration = new SQLiteConfiguration(outRepositoryPath);
         RepositoryCreator outRepCreator = new SQLiteRepositoryCreator();
         outRepository = outRepCreator.CreateClientRepository(outConfiguration);
-        if (outRepository == null) { throw new Exception("Output SQL repository is not created."); }
+        if (outRepository == null) { 
+            throw new Exception("Output SQL repository is not created."); 
+        }
 
         // Получение списка клиентов из CSV в диапазоне идентификаторов from, to для загрузки в SQLite
         IClientSpecification clientCpecification = new ClientFileSpecification(from, to);

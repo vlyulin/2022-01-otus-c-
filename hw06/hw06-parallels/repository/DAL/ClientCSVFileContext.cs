@@ -31,8 +31,8 @@ namespace repository.DAL
                 }
                 using (File.Create(fileName)) { };
             }
-            this._fileName = fileName;
-            this._serializer = serializer;
+            _fileName = fileName;
+            _serializer = serializer;
         }
 
         /// <summary>
@@ -86,7 +86,7 @@ namespace repository.DAL
         {
             int count = 0;
             string line;
-            using (StreamReader reader = new StreamReader(this._fileName))
+            using (StreamReader reader = new StreamReader(_fileName))
             {
                 while ((line = reader.ReadLine()) != null)
                 {
@@ -104,7 +104,7 @@ namespace repository.DAL
         IEnumerable<Client> IClientContext.Get(IClientSpecification clientSpecification)
         {
             List<Client> clients = new();
-            using(StreamReader streamReader = new StreamReader(this._fileName))
+            using(StreamReader streamReader = new StreamReader(_fileName))
             {
                 while (!streamReader.EndOfStream)
                 {
@@ -141,13 +141,11 @@ namespace repository.DAL
         /// <param name="clients">список клиентов</param>
         void IClientContext.Insert(IEnumerable<Client> clients)
         {
-            using (StreamWriter streamWriter = File.AppendText(_fileName))
+            using var streamWriter = File.AppendText(_fileName);
+            foreach (Client client in clients)
             {
-                foreach (Client client in clients)
-                {
-                    string serializedClient = _serializer.Serialize(client);
-                    streamWriter.WriteLine(serializedClient);
-                }
+                string serializedClient = _serializer.Serialize(client);
+                streamWriter.WriteLine(serializedClient);
             }
         }
     }
