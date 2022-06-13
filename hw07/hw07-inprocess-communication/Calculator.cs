@@ -10,17 +10,13 @@ namespace hw07_inprocess_communication
 {
     internal class Calculator
     {
-        public Calculator()
-        {
-        }
-
         public void TimeViaLoop(int[] numbers)
         {
             var sw = Stopwatch.StartNew();
             long total = CalculateByLoop(numbers);
             sw.Stop();
             Console.WriteLine("Total is: " + total + ". Elapsed time for calculation of " + numbers.Length +
-                                  " numbers is :" + sw.Elapsed + " ms.");
+                                  " numbers is :" + sw.Elapsed.TotalMilliseconds + " ms.");
         }
 
         public long CalculateByLoop(int[] numbers)
@@ -43,7 +39,7 @@ namespace hw07_inprocess_communication
         }
         public long CalculateByThreads(int[] numbers)
         {
-            int threads = 2 * Environment.ProcessorCount;
+            int threads = Environment.ProcessorCount;
             ThreadPool.SetMaxThreads(threads, threads);
 
 

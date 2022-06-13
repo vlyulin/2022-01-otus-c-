@@ -904,37 +904,43 @@ Options:
 
 Результаты выполнения:
 ---
-Обычное вычисление суммы элементов массива через Loop:
-```
-Total is: 100000. Elapsed time for calculation of 100000 numbers is :00:00:00.0004217 ms.
-Total is: 1000000. Elapsed time for calculation of 1000000 numbers is :00:00:00.0042811 ms.
-Total is: 10000000. Elapsed time for calculation of 10000000 numbers is :00:00:00.0315901 ms.
-```
----
-Параллельное вычисление суммы элементов массива через Thread:
-```
-Total is: 100000. Elapsed time for calculation of 100000 numbers is :00:00:00.0083435 ms.
-Total is: 1000000. Elapsed time for calculation of 1000000 numbers is :00:00:00.0063219 ms.
-Total is: 10000000. Elapsed time for calculation of 10000000 numbers is :00:00:00.0192141 ms.
-```
----
-Параллельное вычисление суммы элементов массива через PLinq:
-```
-Total is: 100000. Elapsed time for calculation of 100000 numbers is :00:00:00.1062788 ms.
-Total is: 1000000. Elapsed time for calculation of 1000000 numbers is :00:00:00.0024686 ms.
-Total is: 10000000. Elapsed time for calculation of 10000000 numbers is :00:00:00.0186400 ms.
-```
----
-Параллельное вычисление суммы элементов массива через Partitioning:
-```
-Total is: 100000. Elapsed time for calculation of 100000 numbers is :00:00:00.0315617 ms.
-Total is: 1000000. Elapsed time for calculation of 1000000 numbers is :00:00:00.0043597 ms.
-Total is: 10000000. Elapsed time for calculation of 10000000 numbers is :00:00:00.0326318 ms.
-```
+
+Обычное вычисление суммы элементов массива через Loop:  
+
+|Количество|Время, мс.|
+|---|---|
+|100000|0,7504|
+|1000000|3,1821|
+|10000000|37,0643|
+
+Параллельное вычисление суммы элементов массива через Thread:  
+
+|Количество|Время, мс.|
+|---|---|
+|100000|:00:00:00.0280487|
+|1000000|:00:00:00.0047160|
+|10000000|:00:00:00.0213866|
+
+Параллельное вычисление суммы элементов массива через PLinq:  
+
+|Количество|Время, мс.|
+|---|---|
+|100000|:00:00:00.0665288|
+|1000000|:00:00:00.0034346|
+|10000000|:00:00:00.0351012|
+
+Параллельное вычисление суммы элементов массива через Partitioning:  
+
+|Количество|Время, мс.|
+|---|---|
+|100000|:00:00:00.0298583|
+|1000000|:00:00:00.0030400|
+|10000000|:00:00:00.0246712|
 
 ![](hw07/imgs/hw07-result.png)
 
 ### Окружение 
+
 ![](hw07/imgs/hardware01.png)
 
 ![](hw07/imgs/hardware02.png)
