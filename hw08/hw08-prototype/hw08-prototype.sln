@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32414.318
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "hw08-prototype", "hw08-prototype.csproj", "{D39B2A28-A743-4232-AF7B-0C0B5BD27CDA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "hw08-prototypeTests", "..\hw08-prototypeTests\hw08-prototypeTests.csproj", "{4E59B247-B1AF-44AF-B1DC-759C8E5475CB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D39B2A28-A743-4232-AF7B-0C0B5BD27CDA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D39B2A28-A743-4232-AF7B-0C0B5BD27CDA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D39B2A28-A743-4232-AF7B-0C0B5BD27CDA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D39B2A28-A743-4232-AF7B-0C0B5BD27CDA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E59B247-B1AF-44AF-B1DC-759C8E5475CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E59B247-B1AF-44AF-B1DC-759C8E5475CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E59B247-B1AF-44AF-B1DC-759C8E5475CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E59B247-B1AF-44AF-B1DC-759C8E5475CB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {20427A1C-964B-4F49-8176-E93AA6236431}
+	EndGlobalSection
+EndGlobal
