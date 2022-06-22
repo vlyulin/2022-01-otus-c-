@@ -6,6 +6,7 @@ Content:
 * [Module hw02 ДЗ "Добавляем взаимодействие между клиентом и сервером"](#Module-hw02-webapi)
 * [Module hw04 ДЗ "Рефлексия и её применение"](#Module-hw04-reflection)
 * [Module hw05 ДЗ "Делегаты и события"](#Module-hw05-delegates)
+* [Module hw06 ДЗ "Параллельная загрузка данных из файла"](#Module-hw06-parallels)
 
 # Student
 `
@@ -190,4 +191,696 @@ internal class G
 3. Результат выполнения тестов
 
 ![](hw05/imgs/test-cases.png)
+
+# Module hw06 ДЗ "Параллельная загрузка данных из файла" <a name="Module-hw06-parallels"></a>
+> Задание: Параллельная загрузка данных из файла
+> Цель:
+> 
+> Сделать параллельный обработчик файла с данными клиентов на основе подготовленного проекта с архитектурой.
+> Задание поможет отработать основные инструменты параллелизма на реалистичной задаче.
+> Описание/Пошаговая инструкция выполнения домашнего задания:
+> 
+> Программа-обработчик должна в параллельном режиме обработать файл с данными клиентов.
+> Каждая строка файла содержит:
+> id (целое число)
+> ФИО (строка),
+> Email (строка)
+> Телефон (строка).
+> Данные отсортированы по id. Нужно десериализовать данные клиента в объект и передать объект в метод класса, который сохраняет его в БД, вместо сохранения в БД можно сделать просто задержку.
+> Задания
+> 
+> 1. Запуск генератора файла через создание процесса, сделать возможность выбора в коде, как запускать генератор, процессом или через вызов метода. Если вдруг встретится баг с генерацией, то его нужно исправить и написать об этом при сдаче работы.
+> 2. Распараллеливаем обработку файла по набору диапазонов Id, то есть нужно, чтобы файл разбивался на диапазоны по Id и обрабатывался параллельно через Thread, сколько диапазонов столько потоков. Хорошо сделать настройку с количеством потоков, чтобы можно было настроить оптимальное количество потоков под размер файла с данными. Предусмотреть обработку ошибок в обработчике и перезапуск по ошибке с указанием числа попыток. Проверить обработку на файле, в котором 1 млн. записей, при сдаче задания написать время, за которое был обработан файл и количество потоков.
+> 3. Вместо создания потоков через new Thread() использовать ThreadPool, при сдаче задания написать время, за которое был обработан файл и количество потоков.
+> 4. Добавить сохранение в реальную БД, можно SQL Lite для простоты тестирования или для лучшего понимания специфики загрузки полноценную базу данных (MS SQL Server, PostgreSQL, Mongo и т.д.)
+> 5. Сделать обработку файла в CSV формате, то есть написать генератор и разбор файла.
+> 6. Дать обратную связь по 2-м домашним заданиям других студентов на курсе. Инструкция
+> 7. Сделать форк репозитория из ссылки в материалах, можно изменить структуру проектов, классов и интерфейсов, как считаете нужным и в ReadMe.md описать за что отвечает проект, класс, интерфейс.
+> 8. Реализовать 1 пункт задания, сделав в main проекта запуск процесса-генератора файла, его нужно будет собрать отдельно и передать в программу путь к .exe файлу, также сделать в Main вызов кода генератора из подключенного проекта, выбор между процессом или вызовом метода сделать настройкой (например аргумент командной строки или файл с настройками) со значением по умолчанию для метода.
+> 9. Реализовать 2 пункт задания, сделав свои реализации для IDataLoader и IDataParser.
+> 10. По желанию реализовать 3 пункт задания, сделав дополнительную реализацию IDataLoader.
+> 11. По желанию реализовать 4 пункт задания, сделав дополнительную реализацию для ICustomerRepository и инициализацию БД при старте приложения, можно использовать EF.
+> 12. По желанию реализовать 5 пункт задания, сделав дополнительную реализацию для IDataParser и IDataGenerator.
+> 13. По желанию дать обратную связь по 2-м домашним заданиям других студентов на курсе, можно найти репозитории по форкам к этому репозиторию. Обратную связь можно описать, создав issue к репозиторию, пример обратной связи можно посмотреть из ссылки на проект в материалах, который рассматривается в рамках занятия. Чтобы обратная связь была качественной обязательно нужно похвалить работу, написав, что сделано хорошо и написать, что можно улучшить с пояснениями почему это сделает работу более качественной. Эти рекомендации работают и для code review, так как позволяют более конструктивно обсуждать коммиты.
+
+1. Пример запуска
+data-loader.exe --genapp-path=.\data-generator.exe --method=task --quantity=100 --inrep-path=.\data\clients.csv --outrep-path=.\data\sqlite.dat --ntries=4
+
+2. Описание параметров запуска
+Usage: data-loader.exe --inrep-path=path --outrep-path=path [--genapp-path=path --method=function|task --quantity=int] [--help] [--ntries=int]
+An interactive client for loading clients.
+Options:
+  inrep-path - path to input csv repository file.
+  outrep-path - path to output SQLite repository file.
+  genapp-path - path to generator exe file.
+  method - method repository generation: by function or by task.
+  quantity - quantity of records to be generated.
+  ntries - number of tries of data loading.
+  help - this help.
+
+3. Результат выполнения тестов
+
+![](hw06/imgs/execution-result.png)
+
+Время генерации 1 млн. записей: 6.69 сек.  
+Время загрузки 1 млн. записей: 14.49 сек.  
+
+4. Описание классов и функций
+>**_Note_**: сгенерировано с помощью проекта XmlCommentMarkDownGenerator
+
+## data-loader ##
+
+### Type SharedProject.Utils
+
+ Сервисные функции 
+
+---
+#### Method SharedProject.Utils.CanCreateFile(System.String)
+
+ Проверка возможности создания файла 
+
+|Name | Description |
+|-----|------|
+|file: |путь и имя файла|
+**Returns**: true - файл можут быть создан
+
+---
+
+## data-generator ##
+
+### Type data_generator.ClientGenerator
+
+ Реализация интерфейса IDataGenerator. Генерация объектов Client 
+
+---
+#### Method data_generator.ClientGenerator.Next
+
+ Создание одного объекта типа Client 
+
+**Returns**: 
+
+---
+#### Method data_generator.ClientGenerator.Next(System.Int32)
+
+ Создание нескольких объектов типа Client 
+
+|Name | Description |
+|-----|------|
+|count: |количество создаваемых объектов|
+**Returns**: список сгенерированных объектов типа Client
+
+---
+#### Method data_generator.ClientGenerator.GetNewFIO
+
+ Генерация произвольного ФИО 
+
+**Returns**: сгенерированное ФИО
+
+---
+#### Method data_generator.ClientGenerator.GenerateName(System.Int32)
+
+ Генерация строки похожей на фамилию, имя или отчество 
+
+|Name | Description |
+|-----|------|
+|len: |длина генерируемой строки|
+**Returns**: сгенерированная строка длины len
+
+> https://stackoverflow.com/questions/14687658/random-name-generator-in-c-sharp 
+
+---
+#### Method data_generator.ClientGenerator.GetNewEmail(System.String)
+
+ Генерация e-mail на основе имени и фамилии 
+
+|Name | Description |
+|-----|------|
+|fio: |ФИО разделенные пробелом|
+**Returns**: сгенерированный e-mail
+
+---
+#### Method data_generator.ClientGenerator.GetNewPhoneNumber
+
+ Генерация номера телефона 
+
+**Returns**: сгенерированный номер телефона
+
+---
+### Type data_generator.IDataGenerator
+
+ Интерфейс генератора объектов типа T 
+
+|Name | Description |
+|-----|------|
+|T: ||
+
+
+---
+#### Method data_generator.IDataGenerator.Next
+
+ Создание одного объекта типа T 
+
+**Returns**: экземпляр объекта с типом T
+
+---
+#### Method data_generator.IDataGenerator.Next(System.Int32)
+
+ Создание нескольких объектов типа T 
+
+|Name | Description |
+|-----|------|
+|count: |количество создаваемых объектов|
+**Returns**: список сгенерированных объектов типа T
+
+---
+
+## repository ##
+
+### Type DAL.Client
+
+ Сущность Клиент 
+
+---
+### Type DAL.ClientCSVFileContext
+
+ Реализация интерфейса IClientContext для работы с CSV репозиторием 
+
+---
+#### Method DAL.ClientCSVFileContext.#ctor(System.String,repository.DAL.ISerializer{repository.DAL.Client})
+
+ Создание контекста для работы с CSV репозиторием 
+
+|Name | Description |
+|-----|------|
+|fileName: |путь к CSV репозиторию|
+|serializer: |CSV сериалайзер|
+[[T:System.Exception|T:System.Exception]]: Ошибка создания/открытия CSV файла репозитория
+
+---
+#### Method DAL.ClientCSVFileContext.Open
+
+ Открытие репозитория 
+
+[[T:System.NotImplementedException|T:System.NotImplementedException]]: 
+
+---
+#### Method DAL.ClientCSVFileContext.Close
+
+ Закрытие базы данных 
+
+---
+#### Method DAL.ClientCSVFileContext.BeginTransaction
+
+ Начало транзакции 
+
+[[T:System.NotImplementedException|T:System.NotImplementedException]]: 
+
+---
+#### Method DAL.ClientCSVFileContext.CommitTransaction
+
+ Начало транзакции 
+
+[[T:System.NotImplementedException|T:System.NotImplementedException]]: 
+
+---
+#### Method DAL.ClientCSVFileContext.RollbackTransaction
+
+ Откат транзакции 
+
+[[T:System.NotImplementedException|T:System.NotImplementedException]]: 
+
+---
+#### Method DAL.ClientCSVFileContext.Count
+
+ Подсчет количества записей в CSV файле 
+
+**Returns**: Число записей
+
+---
+#### Method DAL.ClientCSVFileContext.repository#DAL#IClientContext#Get(repository.DAL.IClientSpecification)
+
+ Получение списка клиентов удовлетворяющих заданным условиям 
+
+|Name | Description |
+|-----|------|
+|clientSpecification: |условия отбора записи|
+**Returns**: список клиентов
+
+---
+#### Method DAL.ClientCSVFileContext.repository#DAL#IClientContext#Insert(repository.DAL.Client)
+
+ Добавление нового клиента 
+
+|Name | Description |
+|-----|------|
+|client: |добавляемый клиент|
+
+---
+#### Method DAL.ClientCSVFileContext.repository#DAL#IClientContext#Insert(System.Collections.Generic.IEnumerable{repository.DAL.Client})
+
+ Добавление списка клиентов 
+
+|Name | Description |
+|-----|------|
+|clients: |список клиентов|
+
+---
+### Type DAL.ClientCSVSerializer
+
+ Сериализация/десериализация сущности "Клиент" в/из CSV формата 
+
+---
+#### Method DAL.ClientCSVSerializer.Serialize(repository.DAL.Client)
+
+ Сериализация Client в CSV формат 
+
+|Name | Description |
+|-----|------|
+|obj: |экземпляр типа Client|
+**Returns**: 
+
+---
+#### Method DAL.ClientCSVSerializer.Deserialize(System.IO.StreamReader)
+
+ Десериализация клиента из CSV формата в экземпляр Client 
+
+|Name | Description |
+|-----|------|
+|stream: |поток bytes|
+**Returns**: экземпляр типа Client
+
+[[T:System.IO.IOException|T:System.IO.IOException]]: 
+
+---
+### Type DAL.ClientFileSpecification
+
+ Реализация условия для отбора клиентов из CSV репозитория 
+
+> шаблон проектирования "Спецификация" 
+
+---
+#### Method DAL.ClientFileSpecification.#ctor(System.Int64,System.Int64)
+
+ Конструктор для создания условия отбора клиентов из CSV репозитория 
+
+|Name | Description |
+|-----|------|
+|from: |начальный идентификатор диапазона отбора клиентов (включительно)|
+|to: |конечный идентификатор диапазона отбора клиентов (включительно)|
+
+---
+#### Method DAL.ClientFileSpecification.IsSatisfiedBy(repository.DAL.Client)
+
+ Проверка соответствия экземпляра Клиент заданным условиям 
+
+|Name | Description |
+|-----|------|
+|client: |Клиент|
+**Returns**: true, если клиент удовлетворяет заданным условиям
+
+---
+#### Method DAL.ClientSQLiteContext.SetConnection
+
+ Получение соединения с SQLite базой данных 
+
+**Returns**: 
+
+---
+#### Method DAL.ClientSQLiteContext.#ctor(System.String)
+
+ Создание контекста для работы с CSV репозиторием 
+
+|Name | Description |
+|-----|------|
+|fileName: |путь к SQLite репозиторию|
+[[T:System.Exception|T:System.Exception]]: Ошибка создания/открытия SQLite файла репозитория
+
+> В случае с пустой базой данных создаёт таблицу clients 
+
+---
+#### Method DAL.ClientSQLiteContext.Open
+
+ Открытие репозитория 
+
+---
+#### Method DAL.ClientSQLiteContext.Close
+
+ Закрытие базы данных 
+
+[[T:System.NotImplementedException|T:System.NotImplementedException]]: 
+
+---
+#### Method DAL.ClientSQLiteContext.Count
+
+ Подсчет количества записей в CSV файле 
+
+**Returns**: Число записей Client в репозитории
+
+[[T:System.NotImplementedException|T:System.NotImplementedException]]: 
+
+---
+#### Method DAL.ClientSQLiteContext.Get(repository.DAL.IClientSpecification)
+
+ Получение списка клиентов удовлетворяющих заданным условиям 
+
+|Name | Description |
+|-----|------|
+|clientSpecification: |условия отбора записи|
+**Returns**: список клиентов
+
+[[T:System.NotImplementedException|T:System.NotImplementedException]]: 
+
+---
+#### Method DAL.ClientSQLiteContext.Insert(repository.DAL.Client)
+
+ Добавление нового клиента 
+
+|Name | Description |
+|-----|------|
+|client: |добавляемый клиент|
+
+---
+#### Method DAL.ClientSQLiteContext.Insert(System.Collections.Generic.IEnumerable{repository.DAL.Client})
+
+ Получение списка клиентов удовлетворяющих заданным условиям 
+
+|Name | Description |
+|-----|------|
+|clientSpecification: |условия отбора записи|
+**Returns**: список клиентов
+
+---
+#### Method DAL.ClientSQLiteContext.BeginTransaction
+
+ Начало транзакции 
+
+---
+#### Method DAL.ClientSQLiteContext.CommitTransaction
+
+ Подтверждение транзакции 
+
+---
+#### Method DAL.ClientSQLiteContext.RollbackTransaction
+
+ Откат транзакции 
+
+---
+### Type DAL.IClientContext
+
+ Интерфейс "Контекста" для работы с базой данных в соответстии с паттерном "Репозиторий" 
+
+---
+#### Method DAL.IClientContext.Open
+
+ Открытие репозитория 
+
+---
+#### Method DAL.IClientContext.Close
+
+ Закрытие репозитория 
+
+---
+#### Method DAL.IClientContext.Get(repository.DAL.IClientSpecification)
+
+ Получение списка клиентов удовлетворяющих заданным условиям 
+
+|Name | Description |
+|-----|------|
+|clientSpecification: |условия отбора записи|
+**Returns**: список клиентов
+
+---
+#### Method DAL.IClientContext.Insert(repository.DAL.Client)
+
+ Добавление нового клиента 
+
+|Name | Description |
+|-----|------|
+|client: |добавляемый клиент|
+
+---
+#### Method DAL.IClientContext.Insert(System.Collections.Generic.IEnumerable{repository.DAL.Client})
+
+ Получение списка клиентов удовлетворяющих заданным условиям 
+
+|Name | Description |
+|-----|------|
+|clientSpecification: |условия отбора записи|
+**Returns**: список клиентов
+
+---
+#### Method DAL.IClientContext.Count
+
+ Подсчет количества записей в CSV файле 
+
+**Returns**: Число записей Client в репозитории
+
+---
+#### Method DAL.IClientContext.BeginTransaction
+
+ Создание транзакции 
+
+---
+#### Method DAL.IClientContext.CommitTransaction
+
+ Подтверждение транзакции 
+
+---
+#### Method DAL.IClientContext.RollbackTransaction
+
+ Откат транзакции 
+
+---
+### Type DAL.IClientSpecification
+
+ Условия для отбора клиентов 
+
+> шаблон проектирования "Спецификация" 
+
+---
+### Type DAL.ISerializer
+
+ Интерфейс сериализации/десериализации 
+
+|Name | Description |
+|-----|------|
+|T: ||
+
+---
+### Type Factory.CSVFileConfiguration
+
+ Реализация интерфейса Конфигурация (IConfiguration) для работы с CSV репозиторием 
+
+---
+#### Method Factory.CSVFileConfiguration.#ctor(System.String)
+
+ Конструктор конфигурации CSV репозитория 
+
+|Name | Description |
+|-----|------|
+|repositoryPath: |путь к CSV репозиторию|
+
+---
+### Type Factory.CSVFileRepositoryCreator
+
+ Создание CSV репозитория 
+
+> Реализация раттерна "Фабричный метод" (Factory Method) 
+
+---
+#### Method Factory.CSVFileRepositoryCreator.CreateClientRepository(repository.Factory.IConfiguration)
+
+ Создание CSV репозитория 
+
+|Name | Description |
+|-----|------|
+|configuration: |Конфигурация CSV репозитория|
+**Returns**: 
+
+---
+### Type Factory.IConfiguration
+
+ Интерфейс конфигурация репозитория 
+
+---
+### Type Factory.RepositoryCreator
+
+ Интерфейс фабрики создания репозитория 
+
+> Паттерн "Фабричный метод" (Factory Method) 
+
+---
+#### Method Factory.RepositoryCreator.CreateClientRepository(repository.Factory.IConfiguration)
+
+ Создание репозитория 
+
+|Name | Description |
+|-----|------|
+|configuration: |Конфигурация репозитория|
+**Returns**: 
+
+---
+### Type Factory.SQLiteConfiguration
+
+ Реализация интерфейса Конфигурация (IConfiguration) для работы с SQLite репозиторием 
+
+---
+#### Method Factory.SQLiteConfiguration.#ctor(System.String)
+
+ Конструктор конфигурации SQLite репозитория 
+
+|Name | Description |
+|-----|------|
+|repositoryPath: |путь к SQLite репозиторию|
+
+---
+## Type Factory.SQLiteRepositoryCreator
+
+ Создание SQLite репозитория 
+
+> Реализация раттерна "Фабричный метод" (Factory Method) 
+
+---
+#### Method Factory.SQLiteRepositoryCreator.CreateClientRepository(repository.Factory.IConfiguration)
+
+ Создание SQLite репозитория 
+
+|Name | Description |
+|-----|------|
+|configuration: |Конфигурация SQLite репозитория|
+**Returns**: 
+
+---
+### Type ClientRepository
+
+ Реализация интерфейса IClientRepository 
+
+---
+#### Method ClientRepository.Open
+
+ Открытие репозитория 
+
+---
+#### Method ClientRepository.Close
+
+ Закрытие соединения с репозиторием 
+
+---
+#### Method ClientRepository.BeginTransaction
+
+ Начало транзакции 
+
+---
+#### Method ClientRepository.CommitTransaction
+
+ Подтверждение транзакции 
+
+---
+#### Method ClientRepository.RollbackTransaction
+
+ Откат транзакции 
+
+---
+#### Method ClientRepository.Count
+
+ Подсчет количества записей в CSV файле 
+
+**Returns**: Число записей
+
+---
+#### Method ClientRepository.Get(repository.DAL.IClientSpecification)
+
+ Получение списка клиентов удовлетворяющих заданным условиям 
+
+|Name | Description |
+|-----|------|
+|clientSpecification: |условия отбора записи|
+**Returns**: список клиентов
+
+---
+#### Method ClientRepository.Insert(repository.DAL.Client)
+
+ Добавление нового клиента 
+
+|Name | Description |
+|-----|------|
+|client: |добавляемый клиент|
+
+---
+#### Method ClientRepository.Insert(System.Collections.Generic.IEnumerable{repository.DAL.Client})
+
+ Добавление списка клиентов 
+
+|Name | Description |
+|-----|------|
+|clients: |список клиентов|
+
+---
+### Type IClientRepository
+
+ Интерфейс репозитория для работы с сущностями Клиент 
+
+> Шаблон проектирования "Репозиторий" 
+
+---
+#### Method IClientRepository.Open
+
+ Открытие репозитория 
+
+---
+#### Method IClientRepository.Close
+
+ Закрытие репозитория 
+
+---
+#### Method IClientRepository.Get(repository.DAL.IClientSpecification)
+
+ Получение списка клиентов удовлетворяющих заданным условиям 
+
+|Name | Description |
+|-----|------|
+|clientSpecification: |условия отбора записи|
+**Returns**: список клиентов
+
+---
+#### Method IClientRepository.Insert(repository.DAL.Client)
+
+ Добавление нового клиента 
+
+|Name | Description |
+|-----|------|
+|client: |добавляемый клиент|
+
+---
+#### Method IClientRepository.Insert(System.Collections.Generic.IEnumerable{repository.DAL.Client})
+
+ Добавление списка клиентов 
+
+|Name | Description |
+|-----|------|
+|clients: |список клиентов|
+
+---
+#### Method IClientRepository.Count
+
+ Подсчет количества записей в CSV файле 
+
+**Returns**: Число записей
+
+---
+#### Method IClientRepository.BeginTransaction
+
+ Создание транзакции 
+
+---
+#### Method IClientRepository.CommitTransaction
+
+ Подтверждение транзакции 
+
+---
+#### Method IClientRepository.RollbackTransaction
+
+ Откат транзакции 
+
+---
 

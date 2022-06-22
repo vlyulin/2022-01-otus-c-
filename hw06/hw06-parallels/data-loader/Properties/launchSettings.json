@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "data-loader": {
+      "commandName": "Project",
+      "commandLineArgs": "--genapp-path=C:\\_P\\OtusC#\\vlyulin_c#_homeworks\\hw06\\hw06-parallels\\data-generator\\bin\\x86\\Debug\\net6.0-windows\\data-generator.exe --method=task --quantity=100 --inrep-path=C:\\_P\\OtusC#\\vlyulin_c#_homeworks\\hw06\\hw06-parallels\\data\\clients.csv --outrep-path=C:\\_P\\OtusC#\\vlyulin_c#_homeworks\\hw06\\hw06-parallels\\data\\sqlite.dat --ntries=4"
+    }
+  }
+}

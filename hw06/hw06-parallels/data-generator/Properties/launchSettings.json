@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "data-generator": {
+      "commandName": "Project",
+      "commandLineArgs": "--path=./x.csv --quantity=10"
+    }
+  }
+}
