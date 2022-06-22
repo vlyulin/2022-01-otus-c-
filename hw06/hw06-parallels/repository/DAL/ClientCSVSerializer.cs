@@ -11,7 +11,11 @@ namespace repository.DAL
     /// </summary>
     public class ClientCSVSerializer : ISerializer<Client>
     {
+<<<<<<< HEAD
         const char FIELD_SEPARATOR = ',';
+=======
+        const char FieldSeparator = ',';
+>>>>>>> main
 
         /// <summary>
         /// Сериализация Client в CSV формат
@@ -22,11 +26,19 @@ namespace repository.DAL
         {
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.Append(obj.id);
+<<<<<<< HEAD
             stringBuilder.Append(FIELD_SEPARATOR);
             stringBuilder.Append(obj.fio);
             stringBuilder.Append(FIELD_SEPARATOR);
             stringBuilder.Append(obj.email);
             stringBuilder.Append(FIELD_SEPARATOR);
+=======
+            stringBuilder.Append(FieldSeparator);
+            stringBuilder.Append(obj.fio);
+            stringBuilder.Append(FieldSeparator);
+            stringBuilder.Append(obj.email);
+            stringBuilder.Append(FieldSeparator);
+>>>>>>> main
             stringBuilder.Append(obj.phone);
             return stringBuilder.ToString();
         }
@@ -40,7 +52,11 @@ namespace repository.DAL
         public Client Deserialize(StreamReader stream)
         {
             string str = stream.ReadLine();
+<<<<<<< HEAD
             string[] fields = str.Split(FIELD_SEPARATOR);
+=======
+            string[] fields = str.Split(FieldSeparator);
+>>>>>>> main
             if(fields.Length != 4)
             {
                 throw new IOException("bad reccord: " + str);

@@ -31,8 +31,13 @@ namespace repository.DAL
                 }
                 using (File.Create(fileName)) { };
             }
+<<<<<<< HEAD
             this._fileName = fileName;
             this._serializer = serializer;
+=======
+            _fileName = fileName;
+            _serializer = serializer;
+>>>>>>> main
         }
 
         /// <summary>
@@ -86,7 +91,11 @@ namespace repository.DAL
         {
             int count = 0;
             string line;
+<<<<<<< HEAD
             using (StreamReader reader = new StreamReader(this._fileName))
+=======
+            using (StreamReader reader = new StreamReader(_fileName))
+>>>>>>> main
             {
                 while ((line = reader.ReadLine()) != null)
                 {
@@ -104,7 +113,11 @@ namespace repository.DAL
         IEnumerable<Client> IClientContext.Get(IClientSpecification clientSpecification)
         {
             List<Client> clients = new();
+<<<<<<< HEAD
             using(StreamReader streamReader = new StreamReader(this._fileName))
+=======
+            using(StreamReader streamReader = new StreamReader(_fileName))
+>>>>>>> main
             {
                 while (!streamReader.EndOfStream)
                 {
@@ -141,6 +154,7 @@ namespace repository.DAL
         /// <param name="clients">список клиентов</param>
         void IClientContext.Insert(IEnumerable<Client> clients)
         {
+<<<<<<< HEAD
             using (StreamWriter streamWriter = File.AppendText(_fileName))
             {
                 foreach (Client client in clients)
@@ -148,6 +162,13 @@ namespace repository.DAL
                     string serializedClient = _serializer.Serialize(client);
                     streamWriter.WriteLine(serializedClient);
                 }
+=======
+            using var streamWriter = File.AppendText(_fileName);
+            foreach (Client client in clients)
+            {
+                string serializedClient = _serializer.Serialize(client);
+                streamWriter.WriteLine(serializedClient);
+>>>>>>> main
             }
         }
     }

@@ -36,10 +36,27 @@ namespace repository.DAL
         /// </remarks>
         public ClientSQLiteContext(string fileName)
         {
+<<<<<<< HEAD
             this._fileName = fileName;
 
             if (!File.Exists(fileName))
             {
+=======
+            _fileName = fileName;
+            if(File.Exists(fileName))
+            {
+                return;
+            }
+
+            object _lock = new object();
+            lock (_lock)
+            {
+                if (File.Exists(fileName))
+                {
+                    return;
+                }
+
+>>>>>>> main
                 if (!Utils.CanCreateFile(fileName))
                 {
                     throw new Exception("Bad repository file: [" + fileName + "]");
@@ -149,7 +166,11 @@ namespace repository.DAL
         /// </summary>
         public void BeginTransaction()
         {
+<<<<<<< HEAD
            this._transaction = _connection.BeginTransaction();
+=======
+           _transaction = _connection.BeginTransaction();
+>>>>>>> main
         }
 
         /// <summary>

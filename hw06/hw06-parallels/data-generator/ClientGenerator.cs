@@ -13,6 +13,12 @@ namespace data_generator
     /// </summary>
     public class ClientGenerator : IDataGenerator<Client>
     {
+<<<<<<< HEAD
+=======
+        private static readonly string[] _consonants = { "b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "l", "n", "p", "q", "r", "s", "sh", "zh", "t", "v", "w", "x" };
+        private static readonly string[] _vowels = { "a", "e", "i", "o", "u", "ae", "y" };
+
+>>>>>>> main
         private int _nextId = 0;
 
         /// <summary>
@@ -74,6 +80,7 @@ namespace data_generator
         private static string GenerateName(int len)
         {
             Random r = new Random();
+<<<<<<< HEAD
             string[] consonants = { "b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "l", "n", "p", "q", "r", "s", "sh", "zh", "t", "v", "w", "x" };
             string[] vowels = { "a", "e", "i", "o", "u", "ae", "y" };
             string Name = "";
@@ -89,6 +96,21 @@ namespace data_generator
             }
 
             return Name;
+=======
+            StringBuilder Name = new StringBuilder();
+            Name.Append(_consonants[r.Next(_consonants.Length)].ToUpper());
+            Name.Append(_vowels[r.Next(_vowels.Length)]);
+            int b = 2; // b tells how many times a new letter has been added. It's 2 right now because the first two letters are already in the name.
+            while (b < len)
+            {
+                Name.Append(_consonants[r.Next(_consonants.Length)]);
+                b++;
+                Name.Append(_vowels[r.Next(_vowels.Length)]);
+                b++;
+            }
+
+            return Name.ToString();
+>>>>>>> main
         }
 
         /// <summary>

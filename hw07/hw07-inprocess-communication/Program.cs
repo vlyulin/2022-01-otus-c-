@@ -7,9 +7,15 @@ namespace inprocess_communication
     {
         enum sizes : int
         {
+<<<<<<< HEAD
             ONE_HUNDRED = 100000,
             ONE_MILLION = 1000000,
             TEN_MILLIONS = 10000000
+=======
+            OneHundred = 100000,
+            OneMillion = 1000000,
+            TenMillions = 10000000
+>>>>>>> main
         };
         public static void Main(string[] args)
         {
